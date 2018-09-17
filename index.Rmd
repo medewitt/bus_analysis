@@ -1,0 +1,100 @@
+---
+title: "Winston-Salem Public Transportation Analysis"
+author: "Michael DeWitt"
+date: "9/17/2018"
+output: html_document
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+
+# Background
+
+This page offers some additional details regarding a transportation analysis in Winston-Salem, NC.
+
+## Starting Locations
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+read_csv("data/analysis_starting_locations.csv") %>% 
+  arrange(ward) %>% 
+  DT::datatable(colnames = c("Starting Location", "Address", "Ward"))
+```
+
+## Destinations
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+tribble(
+  ~stop, ~stop_address,
+  "WFUBMC", "1 Medical Center Blvd, Winston-Salem, NC 27157",
+  "Novant", " 3333 Silas Creek Pkwy, Winston-Salem, NC 27103",
+  "Dept of Social Services", "741 N Highland Ave, Winston-Salem, NC 27101",
+  "Forsyth Technical Community College", "2100 Silas Creek Pkwy, Winston-Salem, NC 27103",
+  "WSSU", "601 S Martin Luther King Jr Dr, Winston-Salem, NC 27110",
+  "Publix", "34 Miller St, Winston-Salem, NC 27104",
+  "Southside United Health Center", "3009 Waughtown St A, Winston-Salem, NC 27107",
+  "Novant Health Pediatrics, Westgate", "1351 Westgate Center Dr, Winston-Salem, NC 27103",
+  "Downtown Health Plaza", "1200 N Martin Luther King Jr Dr, Winston-Salem, NC 27101",
+  "Community Care Center", "2135 New Walkertown Rd, Winston-Salem, NC 27101",
+  "Food Lion", "3505 Patterson Ave, Winston-Salem, NC 27105",
+  "Compare Foods", "951 Silas Creek Pkwy, Winston-Salem, NC 27127",
+  "Walmart Super Center", "3475 Pkwy Village Ct, Winston-Salem, NC 27127",
+) %>% 
+   DT::datatable(colnames = c("Destination", "Address"))
+```
+
+## Map
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.width="800px"}
+library(sf)
+library(ggmap)
+library(rgdal)
+library(raster)
+out <- read_csv("data/geocoded_starting_places.csv")
+
+register_google(key = GOOGLE_API)
+
+out <- filter(out, !is.na(lat))
+
+wards <- st_read("data/wards_20150327/wards_20150327.shp", quiet = TRUE)
+
+wards_2 <- st_transform(wards, crs = 4326)
+
+wards_2 %>% 
+  mutate(
+    lon = map_dbl(geometry, ~st_centroid(.x)[[1]]),
+    lat = map_dbl(geometry, ~st_centroid(.x)[[2]])
+  )->wards_3
+
+places_of_interest <- tribble(
+  ~address, ~name,
+  "Novant Hospital, Winston-Salem, NC", "Novant",
+  "Downtown Health Plaza, Winston-Salem, NC", "DHP")
+
+places_of_interest <- places_of_interest %>% 
+  mutate_geocode(address)
+
+wards_3 %>% 
+  ggplot()+
+  geom_sf(aes(fill = Ward))+
+  geom_point(data = out, aes(x = lon, y = lat))+
+  geom_point(data = places_of_interest, aes(x = lon, y = lat, shape ="f"),
+             size = 8, color = "red")+
+  theme_void()+
+  geom_text(data = wards_3 %>% group_by(Ward) %>% filter(Shape_Leng == max(Shape_Leng)),
+                                      aes(label = Ward, x = lon, y = lat), nudge_y = .004, size = 4)+
+  geom_text(data = places_of_interest, aes(label = name, x = lon, y = lat))+
+  theme(legend.position = "none")+
+  coord_sf(crs = st_crs(wards_3), datum = NA)+
+  labs(
+    title = "Winston-Salem Points of Interest Examine",
+    subtitle = "Key Destinations and Starting Points by Ward",
+    caption = "Ward Shape File at http://www.cityofws.org/Departments/Planning/Publications-and-Maps/GIS"
+  )+
+  theme(plot.title = element_text(size =14),
+        plot.subtitle  = element_text(size =12))
+```
+

@@ -16,7 +16,15 @@ library(kableExtra)
 
 This page offers some additional details regarding a transportation analysis in Winston-Salem, NC.
 
+## Analysis as Presented
+
+```{r echo=FALSE, out.width="1000px", out.height="1200px"}
+knitr::include_graphics("data/2018-09-17_Remarks_to_City_council.pdf")
+```
+
 ## Starting Locations
+
+The following locations were used in the analysis as starting locations.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 read_csv("data/analysis_starting_locations.csv") %>% 
@@ -48,7 +56,7 @@ tribble(
 
 ## Map
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, out.width="800px"}
+```{r echo=FALSE, message=FALSE, warning=FALSE, out.width="800px", cache=TRUE}
 library(sf)
 library(ggmap)
 library(rgdal)
@@ -97,4 +105,7 @@ wards_3 %>%
   theme(plot.title = element_text(size =14),
         plot.subtitle  = element_text(size =12))
 ```
+
+
+
 

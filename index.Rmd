@@ -2,7 +2,10 @@
 title: "Winston-Salem Public Transportation Analysis"
 author: "Michael DeWitt"
 date: "9/17/2018"
-output: html_document
+output: 
+  html_document:
+    includes:
+       in_header: GA.html
 ---
 
 ```{r include=FALSE}

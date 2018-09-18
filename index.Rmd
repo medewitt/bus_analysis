@@ -1,9 +1,12 @@
 ---
 title: "Winston-Salem Public Transportation Analysis"
-author: "Michael DeWitt"
+author: "Michael DeWitt, Phillip Summers, Jeff Bloomfield, Keena Moore, Megan Irby"
 date: "9/17/2018"
 output: 
   html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
     includes:
        in_header: GA.html
 ---
@@ -19,7 +22,7 @@ library(kableExtra)
 
 This page offers some additional details regarding a transportation analysis in Winston-Salem, NC.
 
-## Analysis as Presented
+# Analysis as Presented
 
 ```{r echo=FALSE, out.width="1000px", out.height="1200px"}
 knitr::include_graphics("data/2018-09-17_Remarks_to_City_council.pdf")
@@ -110,5 +113,9 @@ wards_3 %>%
 ```
 
 
+# Record of Presentation
 
+Public comments begins at 1:55:00. Full video and agenda available [here](http://winston-salem.granicus.com/MediaPlayer.php?view_id=4&clip_id=3070)
+
+<iframe width="480" height="360" frameborder="0" allowfullscreen="true" src="https://winston-salem.granicus.com/MediaPlayer.php?view_id=4&clip_id=3070&starttime=undefined&stoptime=undefined&autostart=0&embed=1"></iframe>
 
